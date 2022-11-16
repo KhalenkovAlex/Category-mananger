@@ -1,34 +1,21 @@
-import express, { Request, Response, Express } from 'express';
+import express, { Express } from 'express';
+import cors from 'cors';
 import dotenv from 'dotenv';
 
-dotenv.config();
+import sequelize from './db';
+import models from './models/model';
+import router from './routes/index';
 
+dotenv.config();
 const app: Express = express();
-const sequelize = require('./db');
 
 const PORT = process.env.PORT;
 
+app.use(cors());
+app.use(express.json());
+app.use('/api', router);
 
-app.get('/', (req: Request, res: Response) => {
-    res.send('Express + TypeScript Server');
-});
-
-// app.post('/', (req: Request, res: Response) => {
-//     const query = "SELECT * FROM test.test";
-//     db.query(query, (error: any, data: any) => {
-//         try {
-//             console.log('########### data:', data);
-//         } catch (e) {
-//             throw error;
-//         }
-//     })
-//     return res.send('Express + TypeScript Server!');
-// });
-
-
-
-
-const start = async () => {
+const start = (async () => {
     try {
         await sequelize.authenticate();
         await sequelize.sync();
@@ -36,6 +23,4 @@ const start = async () => {
     } catch (e) {
         throw e;
     }
-};
-
-start();
+})();
