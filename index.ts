@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 
 import sequelize from './db';
-import models from './models/model';
+import models from './models/models';
 import router from './routes/index';
 
 dotenv.config();
@@ -15,11 +15,11 @@ app.use(cors());
 app.use(express.json());
 app.use('/api', router);
 
-const start = (async () => {
+(async () => {
     try {
         await sequelize.authenticate();
         await sequelize.sync();
-        app.listen(PORT, () => { console.log(`[server]: Server is running at port:${ PORT }`)});
+        app.listen(PORT, () => { console.log(`[server]: Server is running on port: ${ PORT }`)});
     } catch (e) {
         throw e;
     }
