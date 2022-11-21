@@ -2,14 +2,20 @@ import categoryService from '../services/categoryService';
 
 import { Category } from '../models/models';
 
-import { CategoryCreateParams, SearchParam } from '../interfaces';
-import { TypedCategoryResponse, TypedResponse } from '../types';
+import {
+    CategoryCreateParams,
+    SearchParam,
+    TypedCategoryResponse,
+    TypedResponse
+} from '../interfaces';
 
 interface CategoryPatchParams {
-    id: string,
-    slug?: string,
-    name?: string,
-    active?: boolean,
+    body: {
+        id: string,
+        slug?: string,
+        name?: string,
+        active?: boolean,
+    }
 }
 
 interface FilterParams {
@@ -36,12 +42,12 @@ class CategoryController {
 
             return res.json(newCategory);
         } catch (e) {
-            return res.status(400).json({ message:`Request failed, reason: ${e}` });
+            return res.status(400).json({ message: `Request failed, reason: ${e}` });
         }
     };
 
-    async changeCategory(req: { body: CategoryPatchParams }, res: TypedResponse<TypedCategoryResponse>) {
-        const updatedCategoryData: CategoryPatchParams = req.body;
+    async changeCategory(req: CategoryPatchParams, res: TypedResponse<TypedCategoryResponse>) {
+        const updatedCategoryData = req.body;
         const updatedCategory = await categoryService.changeCategory(updatedCategoryData);
 
         if (!updatedCategory) {

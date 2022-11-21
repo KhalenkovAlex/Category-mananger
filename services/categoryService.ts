@@ -2,7 +2,7 @@ import { literal, Op, Sequelize } from 'sequelize';
 
 import { Category } from '../models/models';
 
-import { CategoryCreateParams, SearchParam } from '../interfaces';
+import { CategoryCreateParams } from '../interfaces';
 
 interface updateCategoryData {
     id: string,
@@ -107,6 +107,7 @@ class CategoryService {
         const trimmedName: TrimmedParam = name ? name.trim() : undefined;
         const trimmedDescription: TrimmedParam = description ? description.trim() : undefined;
         const trimmedSearch: TrimmedParam = search ? search.trim() : undefined;
+
         if (search && search.trim() !== '') {
             const rule = {
                 [Op.or]:

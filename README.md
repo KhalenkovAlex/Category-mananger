@@ -12,3 +12,6 @@
 -TypeScript
 БД MySql
 ORM: Sequelize
+
+Запуск: 
+npm run dev
