@@ -2,7 +2,8 @@ import categoryService from '../services/categoryService';
 
 import { Category } from '../models/models';
 
-import { CategoryCreateParams, ICategory } from '../interfaces';
+import { CategoryCreateParams } from '../interfaces';
+import { TypedCategoryResponse, TypedResponse } from '../types';
 
 interface CategoryPatchParams {
     id: string,
@@ -15,10 +16,6 @@ interface SearchByIdOrSlugParams {
     slug?: string,
     id?: string,
 }
-type FaultResponse = { message: string };
-type SuccessResponse = ICategory[];
-
-type DeleteCategoryResponse = FaultResponse | SuccessResponse;
 
 interface filterParams {
     name: string,
@@ -32,7 +29,7 @@ interface filterParams {
 }
 
 class CategoryController {
-    async createCategory(req: { body: CategoryCreateParams }, res: any) {
+    async createCategory(req: { body: CategoryCreateParams }, res: TypedResponse<TypedCategoryResponse>) {
         const params: CategoryCreateParams = req.body;
         try {
             if (!params.slug || !params.name || params.active === undefined) {
@@ -46,7 +43,7 @@ class CategoryController {
         }
     };
 
-    async changeCategory(req: { body: CategoryPatchParams }, res: any) {
+    async changeCategory(req: { body: CategoryPatchParams }, res: TypedResponse<TypedCategoryResponse>) {
         const updatedCategoryData: CategoryPatchParams = req.body;
         const updatedCategory = await categoryService.changeCategory(updatedCategoryData);
 
@@ -57,7 +54,7 @@ class CategoryController {
         return res.json({ message: 'Category was successfully updated' });
     };
 
-    async deleteCategory(req: { params: { id: string }}, res: any) {
+    async deleteCategory(req: { params: { id: string }}, res: TypedResponse<TypedCategoryResponse>) {
         const { id } = req.params;
         try {
             const { name } = await Category.findByPk(id);
@@ -69,7 +66,7 @@ class CategoryController {
         }
     };
 
-    async getCategoriesByParams(req: { query: SearchByIdOrSlugParams }, res: any) {
+    async getCategoriesByParams(req: { query: SearchByIdOrSlugParams }, res: TypedResponse<TypedCategoryResponse>) {
         const searchParams = req.query;
         const category = await categoryService.getCategoriesByParams(searchParams);
 
@@ -80,7 +77,7 @@ class CategoryController {
         return res.json(category);
     };
 
-    async getCategoriesByFilterParams(req: { body: filterParams }, res: any) {
+    async getCategoriesByFilterParams(req: { body: filterParams }, res: TypedResponse<TypedCategoryResponse>) {
         const {
             name,
             description,

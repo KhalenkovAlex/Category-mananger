@@ -1,9 +1,10 @@
-import { Category } from '../models/models';
 import { literal, Op, Sequelize } from 'sequelize';
+
+import { Category } from '../models/models';
 
 import { CategoryCreateParams } from '../interfaces';
 
-interface updatedCategoryData {
+interface updateCategoryData {
     id: string,
     slug?: string,
     name?: string,
@@ -25,7 +26,7 @@ class CategoryService {
         }
     };
 
-    async changeCategory(params: updatedCategoryData) {
+    async changeCategory(params: updateCategoryData) {
         const { id } = params;
         const res = await Category.update({ ...params }, { where: { id }});
 
@@ -39,7 +40,6 @@ class CategoryService {
 
     async getCategoriesByParams(searchParams: SearchParams) {
         const { slug, id = '' } = searchParams;
-
         return await Category.findAll({
             where: {
                 [Op.or]:
