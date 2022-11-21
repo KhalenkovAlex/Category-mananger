@@ -2,7 +2,7 @@ import categoryService from '../services/categoryService';
 
 import { Category } from '../models/models';
 
-import { CategoryCreateParams } from '../interfaces';
+import { CategoryCreateParams, SearchParam } from '../interfaces';
 import { TypedCategoryResponse, TypedResponse } from '../types';
 
 interface CategoryPatchParams {
@@ -12,20 +12,17 @@ interface CategoryPatchParams {
     active?: boolean,
 }
 
-interface SearchByIdOrSlugParams {
-    slug?: string,
-    id?: string,
-}
-
-interface filterParams {
-    name: string,
-    description: string,
-    slug: string,
-    active: boolean,
-    search: string,
-    pageSize: number,
-    page: number,
-    sort: string
+interface FilterParams {
+    body: {
+        name: string,
+        description: string,
+        slug: string,
+        active: boolean,
+        search: string,
+        pageSize: number,
+        page: number,
+        sort: string,
+    }
 }
 
 class CategoryController {
@@ -33,13 +30,13 @@ class CategoryController {
         const params: CategoryCreateParams = req.body;
         try {
             if (!params.slug || !params.name || params.active === undefined) {
-                return res.status(400).json({ message: 'Unable to create new Category, please check your data' });
+                return res.status(400).json({ message: 'Unable to create new Category, please check data' });
             }
             const newCategory = await categoryService.createNew(params);
 
             return res.json(newCategory);
         } catch (e) {
-            return res.status(400).json({ message:`Request failed, reason: ${e} ` });
+            return res.status(400).json({ message:`Request failed, reason: ${e}` });
         }
     };
 
@@ -48,7 +45,7 @@ class CategoryController {
         const updatedCategory = await categoryService.changeCategory(updatedCategoryData);
 
         if (!updatedCategory) {
-          return res.status(404).json({ message: 'Unable to update this Category, please check your data' });
+          return res.status(404).json({ message: 'Unable to update this Category, please check data' });
         }
 
         return res.json({ message: 'Category was successfully updated' });
@@ -62,22 +59,18 @@ class CategoryController {
 
             return res.json(result);
         } catch (e) {
-            return res.status(404).json({ message: 'Category with this id not found' })
+            return res.status(404).json({ message: `Category with this 'id' not found` });
         }
     };
 
-    async getCategoriesByParams(req: { query: SearchByIdOrSlugParams }, res: TypedResponse<TypedCategoryResponse>) {
-        const searchParams = req.query;
-        const category = await categoryService.getCategoriesByParams(searchParams);
-
-        if (!category.length) {
-            return res.status(404).json({ message: 'Category by this params not found' });
-        }
+    async getCategoriesByParams(req: SearchParam, res: TypedResponse<TypedCategoryResponse>) {
+        const searchParam = req.params.param;
+        const category = await categoryService.getCategoriesByParams(searchParam);
 
         return res.json(category);
     };
 
-    async getCategoriesByFilterParams(req: { body: filterParams }, res: TypedResponse<TypedCategoryResponse>) {
+    async getCategoriesByFilterParams(req: FilterParams, res: TypedResponse<TypedCategoryResponse>) {
         const {
             name,
             description,
@@ -92,7 +85,16 @@ class CategoryController {
 
         if (isParamsReceived) return res.status(404).json({ message: 'No params for filtering' });
 
-        const result = await categoryService.findByFilter(name, description, slug, active, search, pageSize, page, sort);
+        const result = await categoryService.findByFilter(
+            name,
+            description,
+            slug,
+            active,
+            search,
+            pageSize,
+            page,
+            sort
+        );
 
         return res.json(result);
     };

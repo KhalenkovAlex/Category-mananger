@@ -7,10 +7,17 @@ export interface ICategory {
     createdAt: string,
     updatedAt: string,
 }
+
 export interface CategoryCreateParams {
     id: string,
     slug: string,
     name: string,
     description?: string,
     active: boolean,
+}
+
+export interface SearchParam {
+    params: {
+        param: string,
+    }
 }
